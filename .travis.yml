@@ -1,0 +1,20 @@
+services:
+  - docker
+
+matrix:
+  fast_finish: true
+
+before_script:
+  - make build
+
+script:
+  - make test
+
+after_success:
+  - if [[ "${TRAVIS_TAG}" != "" ]]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    docker tag udovicic/medelli-node udovicic/medelli-node:latest;
+    docker tag udovicic/medelli-node udovicic/medelli-node:${TRAVIS_TAG};
+    docker push udovicic/medelli-node:latest;
+    docker push udovicic/medelli-node:${TRAVIS_TAG};
+    fi
